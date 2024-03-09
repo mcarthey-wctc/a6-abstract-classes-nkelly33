@@ -111,7 +111,49 @@ public class MediaFileContext : IMediaContext
         // 4. Make sure to include a header line at the top of the file with the names of the properties.
 
         // Your code starts here.
+        using (var writer = new StreamWriter(_filePath))
+        {
+            // Write header line
+            writer.WriteLine("Type,Id,Title,Season,Episode,Writers,Format,Length,Regions,Genres");
 
+            // Write each media item
+            foreach (var item in media)
+            {
+                // Convert array properties to string
+                string itemWriters = "";
+                string itemRegions = "";
+                string itemGenres = "";
+
+                if (item is Show show)
+                {
+                    itemWriters = show.Writers != null ? string.Join("|", show.Writers) : "";
+                }
+                else if (item is Video video)
+                {
+                    itemRegions = video.Regions != null ? string.Join("|", video.Regions) : "";
+                }
+                else if (item is Movie movie)
+                {
+                    itemGenres = movie.Genres != null ? string.Join("|", movie.Genres) : "";
+                }
+
+                // Write media item
+                switch (item)
+                {
+                    case Movie movieItem:
+                        writer.WriteLine($"Movie,{movieItem.Id},{movieItem.Title},,,,,,{itemRegions},{itemGenres}");
+                        break;
+                    case Show showItem:
+                        writer.WriteLine($"Show,{showItem.Id},{showItem.Title},{showItem.Season},{showItem.Episode},{itemWriters},,,{itemGenres}");
+                        break;
+                    case Video videoItem:
+                        writer.WriteLine($"Video,{videoItem.Id},{videoItem.Title},,,{itemWriters},{videoItem.Format},{videoItem.Length},{itemRegions},{itemGenres}");
+                        break;
+                    default:
+                        throw new Exception("Unknown media type");
+                }
+            }
+        }
         // Your code ends here.
     }
 }
