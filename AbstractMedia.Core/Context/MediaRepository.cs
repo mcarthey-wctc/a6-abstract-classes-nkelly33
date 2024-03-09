@@ -29,8 +29,14 @@ public class MediaRepository : IMediaRepository
 
         // Your code starts here.
 
+
+
         foreach (var media in _context.Media)
         {
+            if (media.GetType().Name.ToLower() == type && media.Title.ToLower() == title)
+            {
+                return media;
+            }
         }
 
         // Your code ends here.
